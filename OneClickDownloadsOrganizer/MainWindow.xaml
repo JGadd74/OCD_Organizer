@@ -1,0 +1,34 @@
+﻿<Window x:Class="OneClickDownloadsOrganizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OneClickDownloadsOrganizer"
+        mc:Ignorable="d"
+        Title="OCD Organizer" Height="190" Width="250">
+    <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+          
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+       
+        
+        <ProgressBar Name="MyProgressBar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="10" Width="200" Margin="-10" />
+        <CheckBox Name="AutoCheck" Checked="AutoCheck_Checked" Unchecked="AutoCheck_Unchecked" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Content="Auto"/>
+
+
+        <TextBlock Name="Head" Text="One Click Downloads Organizer" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            
+            <Button Name="Button_Organize" HorizontalAlignment="Center" Height="50" Width="100" Content="Organize" FontSize="14" Click="Button_Click_Organize"/>
+            <Button  HorizontalAlignment="Center" Height="50" Width="100" Content="Exit" FontSize="14" Click="Button_Click_Exit"/>
+            <!--<Button Name="CreateDummyFiles" Content="Dummies" Height="50" Width="auto" Click="CreateDummyFiles_Click" />-->
+        </StackPanel>
+       
+    </Grid>
+</Window>
