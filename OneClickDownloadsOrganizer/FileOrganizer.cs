@@ -52,7 +52,6 @@ namespace OneClickDownloadsOrganizer
             if (GetFileCount() == 0) 
             {
                 OnFileCountUpdated();
-                //ProgressStatus = Status.Finished;
             }
         }
 

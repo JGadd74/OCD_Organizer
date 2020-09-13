@@ -14,10 +14,14 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Runtime.CompilerServices;
 
+
 namespace OneClickDownloadsOrganizer
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Plans: Using data binding for AutoCheck
+    ///        refactor
+    ///        Undo? v .6
+    ///        Select custom folder for organize v1.0
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -55,7 +59,7 @@ namespace OneClickDownloadsOrganizer
             this.Dispatcher.Invoke(() =>
             {
                 Head.Text = "Files Remaining: " + Organizer.GetFileCount().ToString();
-                Thread.Sleep(0);
+                //Thread.Sleep(0);
             });
         }
         public void UpdateProgressBar()
@@ -69,7 +73,7 @@ namespace OneClickDownloadsOrganizer
                 MyProgressBar.Value = tmp;
             });
         }
-        bool AutoIsEnabled = false;
+        public static bool AutoIsEnabled = false;
 
         private void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
@@ -111,14 +115,8 @@ namespace OneClickDownloadsOrganizer
             Organizer.CreateDummieFiles(1000);
         }
 
-        private void AutoCheck_Checked(object sender, RoutedEventArgs e)
-        {
-            AutoIsEnabled = true;
-        }
+        
 
-        private void AutoCheck_Unchecked(object sender, RoutedEventArgs e)
-        {
-            AutoIsEnabled = false;
-        }
+
     }
 }

@@ -12,34 +12,33 @@ namespace OneClickDownloadsOrganizer
        //
 
         public List<string[]> ExtensionCategories = new List<string[]>() 
-        { 
-            audio , 
-            compressed , 
+        { // arranged so more common categories are checked first
+            compressed ,
+            wordProcessor ,
+            spreadsheet ,
+            image ,
+            video ,
+            audio ,
+            executable ,
             diskMedia , 
             database , 
             email , 
-            executable , 
             font , 
-            image , 
             internet , 
             presentation , 
             programming , 
-            spreadsheet , 
             system ,
-            video , 
-            wordProcessor
         };
 
         
-
+        // a common category? 
+        // gets common extensions
+        //returns the selected extensions category name
 
 
         public string[] GetExtensionsArray() // update to use linq
         {
             List<string> extensions = new List<string>();
-
-            
-
             foreach(string[] category in ExtensionCategories)
             {
                 foreach(string entry in category)
@@ -61,7 +60,7 @@ namespace OneClickDownloadsOrganizer
         }
 
 
-        // create a Common category, ie exe, pdf, txt etc
+        
         public static string[] audio = new string[] {"Audio Files" , ".aif", ".cda" , ".mid" , ".midi" , ".mp3" , ".mpa" , ".ogg" , ".wav" , ".wma" , ".wpl"};
 
         public static string[] compressed = new string[] {"Compressed Files" , ".7z" , ".arj" , ".deb" , ".pkg" , ".rar" , ".rpm" , ".tar.gz" , ".z" , ".zip"};
@@ -92,5 +91,6 @@ namespace OneClickDownloadsOrganizer
 
         public static string[] wordProcessor = new string[] { "Word Processor Files", ".doc", ".docx" , ".odt" , ".pdf" , ".rtf" , ".tex" , ".txt" , ".wpd"};          
     
+        
     }
 }
