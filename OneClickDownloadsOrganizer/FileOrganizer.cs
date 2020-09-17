@@ -32,14 +32,7 @@ namespace OneClickDownloadsOrganizer
             InitialFileCount = Files.Count() - 1;
         }
 
-        public delegate void FileCountUpdate(object source, EventArgs args);
 
-        public event FileCountUpdate FileCountUpdated;
-
-        protected virtual void OnFileCountUpdated()
-        {
-            FileCountUpdated?.Invoke(this, EventArgs.Empty);
-        }
       
         public int GetFileCount()
         {
@@ -55,16 +48,16 @@ namespace OneClickDownloadsOrganizer
             }
         }
 
-        public delegate void OrganizeStart(object source, EventArgs args);
-        public event OrganizeStart OrganizeStarted;
-        protected virtual void OnOrganizeStarted()
+        public delegate void FileCountUpdate(object source, FileCountUpdatedEventArgs args);
+        public event FileCountUpdate FileCountUpdated;
+        protected virtual void OnFileCountUpdated()
         {
-            OrganizeStarted?.Invoke(this, EventArgs.Empty);
+            FileCountUpdated?.Invoke(this, new FileCountUpdatedEventArgs(GetFileCount(), InitialFileCount));
         }
+
 
         public bool OrganizeDownloads()
         {
-            OnOrganizeStarted();
             InitialFileCount = Files.Count();
             ProgressStatus = Status.Processing;
           
@@ -96,9 +89,18 @@ namespace OneClickDownloadsOrganizer
             Processing,
             Finished
         }
+    }
 
-
-
-
+    public class FileCountUpdatedEventArgs
+    {
+        public FileCountUpdatedEventArgs(int newFileCount, int oldFileCount)
+        {
+            NewFileCount = newFileCount;
+            OldFileCount = oldFileCount;
+            CompletionPercentage = (100 - (100 * (newFileCount / oldFileCount)));
+        }
+        public double CompletionPercentage { get; set; }    
+        public int NewFileCount { get; set; }
+        public int OldFileCount { get; set; }
     }
 }

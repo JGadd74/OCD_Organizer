@@ -29,51 +29,39 @@ namespace OneClickDownloadsOrganizer
         {
             InitializeComponent();
             Organizer.FileCountUpdated += Organizer_FileCountUpdated;
-            Organizer.OrganizeStarted += Organizer_OrganizeStarted;
-            Max = Organizer.GetFileCount();
-            
-            MyProgressBar.Value = 0;
+            MyProgressBar.Maximum = 100;
         }
-
-        private void Organizer_OrganizeStarted(object source, EventArgs args)
-        {
-            this.Dispatcher.Invoke(() =>
-            {
-                if (Organizer.GetFileCount() == 0) MyProgressBar.Maximum = 1;
-                else 
-                {
-                    Max = Organizer.GetFileCount();
-                    MyProgressBar.Maximum = Organizer.GetFileCount();
-                }
-            });
-        }
-        int Max = 0;
+        int Max;
+        public static bool AutoIsEnabled = false;
+ 
         readonly FileOrganizer Organizer = new FileOrganizer();
 
-        private void Organizer_FileCountUpdated(object source, EventArgs args)
+        private void Organizer_FileCountUpdated(object source, FileCountUpdatedEventArgs e)
         {
-            UpdateProgressBar();
+            double p;
+            p = e.CompletionPercentage;
+            UpdateProgressBar(p);
         }
         public void SayStatus()
         {
+
             this.Dispatcher.Invoke(() =>
             {
                 Head.Text = "Files Remaining: " + Organizer.GetFileCount().ToString();
                 //Thread.Sleep(0);
             });
         }
-        public void UpdateProgressBar()
+        public void UpdateProgressBar(double value)
         {
-            int tmp = Max - Organizer.GetFileCount();
+            Max = 100;
             this.Dispatcher.Invoke(() =>
             {
                 if (Organizer.GetFileCount() == 0) SayDone();
                 else SayStatus();
-                
-                MyProgressBar.Value = tmp;
+               // Head.Text = value.ToString(); //testing
+                MyProgressBar.Value = value;
             });
         }
-        public static bool AutoIsEnabled = false;
 
         private void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
@@ -109,14 +97,9 @@ namespace OneClickDownloadsOrganizer
                 Head.Text = "Done!";
             });
         }
-
         private void CreateDummyFiles_Click(object sender, RoutedEventArgs e)
-        {
+        { // testing purposes
             Organizer.CreateDummieFiles(1000);
         }
-
-        
-
-
     }
 }

@@ -19,7 +19,10 @@
        
         
         <ProgressBar Name="MyProgressBar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="10" Width="200" Margin="-10" />
-        <CheckBox Name="AutoCheck" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Content="Auto" IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
+        <CheckBox Name="AutoCheck" VerticalAlignment="Bottom" HorizontalAlignment="Left" 
+                  Margin="10" 
+                  Content="Auto" 
+                  IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
 
 
         <TextBlock Name="Head" Text="One Click Downloads Organizer" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
