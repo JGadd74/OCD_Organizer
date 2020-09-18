@@ -98,14 +98,18 @@ namespace OneClickDownloadsOrganizer
             {
                 OnUnpackStarted();
 
-                var i = from d in Directory.EnumerateDirectories(Main)
-                        select Directory.EnumerateFiles(d).Count();
-                int c = 0;
-                foreach(int k in i)
+                
+                int totalCount = 0;
+
+                var fileCounts = from d in Directory.EnumerateDirectories(Main)
+                                 select Directory.EnumerateFiles(d).Count();
+                foreach (int fileCount in fileCounts)
                 {
-                    c += k;
+                    totalCount += fileCount;
                 }
-                InitialFileCount = c;
+                InitialFileCount = totalCount;
+
+
 
                 var directories = Directory.EnumerateDirectories(Main);
                 foreach( var directory in directories)
