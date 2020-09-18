@@ -4,22 +4,23 @@ using System.Threading;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Runtime.InteropServices;
+using System.Diagnostics.Eventing.Reader;
 
 namespace OneClickDownloadsOrganizer
 {
     class FileOrganizer
     {
-
         private static readonly string activeUser = Environment.UserName;
 
         private static  readonly string Main = @"C:\Users\" + activeUser + @"\Downloads";
         //private static string Other = System.IO.Path.Combine(Main, "Unknown type");
 
-
-        private static readonly ExtensionsKit Ekit = new ExtensionsKit();
+        ExtensionsKit Ekit = new ExtensionsKit();
         private static readonly IEnumerable<string> Files = Directory.EnumerateFiles(Main);
         private const int CategoryName = 0;
         public static int InitialFileCount;
+        
         public static Status ProgressStatus = Status.Ready;
 
         public void CreateDummieFiles(int count)
@@ -31,20 +32,25 @@ namespace OneClickDownloadsOrganizer
             }
             InitialFileCount = Files.Count() - 1;
         }
-
+        public FileOrganizer()
+        {
+            InitialFileCount = Directory.EnumerateFiles(Main).Count()-1; 
+            //MessageBox.Show(InitialFileCount.ToString());
+        }
 
       
         public int GetFileCount()
         {
             int cnt = Directory.EnumerateFiles(Main).Count();
-            return cnt - 1;
+            return cnt-1;
         }
         public void MonitorFileCount()
         {
-            if (GetFileCount() != InitialFileCount) OnFileCountUpdated();
+            OnFileCountUpdated();
             if (GetFileCount() == 0) 
             {
-                OnFileCountUpdated();
+                ProgressStatus = Status.Finished;
+                OnOrganizingFinished();
             }
         }
 
@@ -56,9 +62,77 @@ namespace OneClickDownloadsOrganizer
         }
 
 
-        public bool OrganizeDownloads()
+        public EventHandler<EventArgs> OrganizingStarted;
+        protected virtual void OnOrganizingStarted()
         {
-            InitialFileCount = Files.Count();
+            OrganizingStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+
+
+        public EventHandler<EventArgs> OrganizeFinished;
+        protected virtual void OnOrganizingFinished()
+        {
+            OrganizeFinished?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        public EventHandler<EventArgs> UnpackStarted;
+        public EventHandler<EventArgs> UnpackFinished;
+        protected virtual void OnUnpackStarted()
+        {
+            UnpackStarted?.Invoke(this, EventArgs.Empty);
+        }
+        protected virtual void OnUnpackFinished()
+        {
+            UnpackFinished?.Invoke(this, EventArgs.Empty);
+        }
+
+
+
+
+        public void Unpack()
+        {
+            
+            if (ProgressStatus != Status.Processing)
+            {
+                OnUnpackStarted();
+
+                var i = from d in Directory.EnumerateDirectories(Main)
+                        select Directory.EnumerateFiles(d).Count();
+                int c = 0;
+                foreach(int k in i)
+                {
+                    c += k;
+                }
+                InitialFileCount = c;
+
+                var directories = Directory.EnumerateDirectories(Main);
+                foreach( var directory in directories)
+                {
+                    var _files = Directory.EnumerateFiles(directory);
+                    foreach(var _file in _files)
+                    {
+                        string name = Path.GetFileName(_file);
+                        File.Move(_file, Path.Combine(Main, name));
+                        MonitorFileCount();
+                    }
+                    Directory.Delete(directory);
+                }
+              
+
+            }
+            InitialFileCount = GetFileCount();
+            OnUnpackFinished();
+
+        }
+
+
+        public void OrganizeDownloads()
+        {
+
+            OnOrganizingStarted();
+            InitialFileCount = GetFileCount();
             ProgressStatus = Status.Processing;
           
             foreach (string file in Files)
@@ -80,7 +154,7 @@ namespace OneClickDownloadsOrganizer
                     }
                 }
             }
-            return true;
+            MonitorFileCount();
         }
 
         public enum Status
@@ -96,11 +170,15 @@ namespace OneClickDownloadsOrganizer
         public FileCountUpdatedEventArgs(int newFileCount, int oldFileCount)
         {
             NewFileCount = newFileCount;
-            OldFileCount = oldFileCount;
-            CompletionPercentage = (100 - (100 * (newFileCount / oldFileCount)));
+            OldFileCount = oldFileCount > 0 ? oldFileCount : oldFileCount + 1;
+
+            CompletionPercentage = 100 - (100 * (NewFileCount/OldFileCount));
+           
+           // MessageBox.Show(CompletionPercentage.ToString() + " " + NewFileCount.ToString() + " " + OldFileCount.ToString());
         }
+        
         public double CompletionPercentage { get; set; }    
-        public int NewFileCount { get; set; }
-        public int OldFileCount { get; set; }
+        public double NewFileCount { get; set; }
+        public double OldFileCount { get; set; }
     }
 }

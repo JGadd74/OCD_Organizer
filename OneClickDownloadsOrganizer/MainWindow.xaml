@@ -22,8 +22,8 @@
         <CheckBox Name="AutoCheck" VerticalAlignment="Bottom" HorizontalAlignment="Left" 
                   Margin="10" 
                   Content="Auto" 
+                  ToolTip="Check if you want to continue to organize automatically every 60 seconds."
                   IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
-
 
         <TextBlock Name="Head" Text="One Click Downloads Organizer" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -31,6 +31,7 @@
             <Button Name="Button_Organize" HorizontalAlignment="Center" Height="50" Width="100" Content="Organize" FontSize="14" Click="Button_Click_Organize"/>
             <Button  HorizontalAlignment="Center" Height="50" Width="100" Content="Exit" FontSize="14" Click="Button_Click_Exit"/>
             <!--<Button Name="CreateDummyFiles" Content="Dummies" Height="50" Width="auto" Click="CreateDummyFiles_Click" />-->
+            <Button Name="RestoreButton" Content="Unpack"  Height="50" Width="auto" HorizontalAlignment="Right" Click="UnpackButton_Click"/>
         </StackPanel>
        
     </Grid>

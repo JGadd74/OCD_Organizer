@@ -29,9 +29,35 @@ namespace OneClickDownloadsOrganizer
         {
             InitializeComponent();
             Organizer.FileCountUpdated += Organizer_FileCountUpdated;
+            Organizer.OrganizingStarted += Organizer_Organizing_Started;
+            Organizer.OrganizeFinished += Organizer_Organizing_Finished;
+            Organizer.UnpackStarted += Organizer_Unpack_Started;
+            Organizer.UnpackFinished += Organizer_Unpack_Finished;
             MyProgressBar.Maximum = 100;
+
+            
         }
-        int Max;
+
+        private void Organizer_Unpack_Finished(object sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(() => Button_Organize.IsEnabled = true);
+        }
+
+        private void Organizer_Unpack_Started(object sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(() => Button_Organize.IsEnabled = false);
+        }
+
+        private void Organizer_Organizing_Finished(object sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(() => RestoreButton.IsEnabled = true);
+        }
+
+        private void Organizer_Organizing_Started(object sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(() => RestoreButton.IsEnabled = false);
+        }
+
         public static bool AutoIsEnabled = false;
  
         readonly FileOrganizer Organizer = new FileOrganizer();
@@ -44,40 +70,35 @@ namespace OneClickDownloadsOrganizer
         }
         public void SayStatus()
         {
-
             this.Dispatcher.Invoke(() =>
             {
-                Head.Text = "Files Remaining: " + Organizer.GetFileCount().ToString();
+                Head.Text = "Loose Files: " + Organizer.GetFileCount().ToString();
                 //Thread.Sleep(0);
             });
         }
         public void UpdateProgressBar(double value)
         {
-            Max = 100;
             this.Dispatcher.Invoke(() =>
             {
-                if (Organizer.GetFileCount() == 0) SayDone();
-                else SayStatus();
-               // Head.Text = value.ToString(); //testing
+                SayStatus();
+                //Head.Text = value.ToString(); //testing
                 MyProgressBar.Value = value;
             });
         }
 
+        public int AutoRate = 6000;
         private void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
             ThreadPool.QueueUserWorkItem((O) =>
             {
-                this.Dispatcher.Invoke(() =>
-                {
-                    AutoIsEnabled = AutoCheck.IsChecked.Value;
-                });
+                this.Dispatcher.Invoke(() => AutoIsEnabled = AutoCheck.IsChecked.Value);
 
                 if (!AutoIsEnabled) Organizer.OrganizeDownloads();
                 {
                     while(FileOrganizer.ProgressStatus != FileOrganizer.Status.Finished)
                     {
                         Organizer.OrganizeDownloads();
-                        Thread.Sleep(60000);//1 min
+                        Thread.Sleep(AutoRate);//1 min
                         if (!AutoIsEnabled) break;
                     }
                 }
@@ -100,6 +121,15 @@ namespace OneClickDownloadsOrganizer
         private void CreateDummyFiles_Click(object sender, RoutedEventArgs e)
         { // testing purposes
             Organizer.CreateDummieFiles(1000);
+        }
+
+        private void UnpackButton_Click(object sender, RoutedEventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem((o) => 
+            {
+                Organizer.Unpack();
+            });
+            
         }
     }
 }
