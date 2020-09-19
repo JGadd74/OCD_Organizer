@@ -11,10 +11,9 @@ namespace OneClickDownloadsOrganizer
 {
     class FileOrganizer
     {
-        private static readonly string activeUser = Environment.UserName;
+        public FileOrganizer() => InitialFileCount = Directory.EnumerateFiles(Main).Count() - 1;
 
-        private static  readonly string Main = @"C:\Users\" + activeUser + @"\Downloads";
-        //private static string Other = System.IO.Path.Combine(Main, "Unknown type");
+        private static  readonly string Main = @"C:\Users\" + Environment.UserName + @"\Downloads";
 
         ExtensionsKit Ekit = new ExtensionsKit();
         private static readonly IEnumerable<string> Files = Directory.EnumerateFiles(Main);
@@ -22,30 +21,38 @@ namespace OneClickDownloadsOrganizer
         public static int InitialFileCount;
         
         public static Status ProgressStatus = Status.Ready;
+        public int GetFileCount() => Directory.EnumerateFiles(Main).Count() - 1;
 
-        public void CreateDummieFiles(int count)
-        {
-            for(int i = 0; i<=count; i++)
-            {
-                string name = i.ToString() + ".txt";
-                File.Create(Path.Combine(Main, name));
-            }
-            InitialFileCount = Files.Count() - 1;
-        }
-        public FileOrganizer()
-        {
-            InitialFileCount = Directory.EnumerateFiles(Main).Count()-1; 
-            //MessageBox.Show(InitialFileCount.ToString());
-        }
+        public EventHandler<FileCountUpdatedEventArgs> FileCountUpdated;
+        public EventHandler<EventArgs> OrganizingStarted;
+        public EventHandler<EventArgs> OrganizeFinished;
+        public EventHandler<EventArgs> UnpackStarted;
+        public EventHandler<EventArgs> UnpackFinished;
+        protected virtual void OnFileCountUpdated() =>
+            FileCountUpdated?.Invoke(this, new FileCountUpdatedEventArgs(GetFileCount(), InitialFileCount));
+        protected virtual void OnOrganizingStarted() =>
+            OrganizingStarted?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnOrganizingFinished() =>
+            OrganizeFinished?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnUnpackStarted() =>
+            UnpackStarted?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnUnpackFinished() =>
+            UnpackFinished?.Invoke(this, EventArgs.Empty);
+
+
+
+
+       
+       
+        
 
       
-        public int GetFileCount()
-        {
-            int cnt = Directory.EnumerateFiles(Main).Count();
-            return cnt-1;
-        }
+     
+
+
         public void MonitorFileCount()
         {
+       
             OnFileCountUpdated();
             if (GetFileCount() == 0) 
             {
@@ -54,87 +61,88 @@ namespace OneClickDownloadsOrganizer
             }
         }
 
-        public delegate void FileCountUpdate(object source, FileCountUpdatedEventArgs args);
-        public event FileCountUpdate FileCountUpdated;
-        protected virtual void OnFileCountUpdated()
+
+
+       
+
+
+        public int GetFileCountFromSubDirectories(string Dir)
         {
-            FileCountUpdated?.Invoke(this, new FileCountUpdatedEventArgs(GetFileCount(), InitialFileCount));
+            int totalCount = 0;
+
+            //var fileCounts = from d in Directory.EnumerateDirectories(Dir)
+            //                 select Directory.EnumerateFiles(d).Count();
+            List<string> LocallyCreatedDirectories = new List<string>();
+
+            foreach(var dir in Directory.EnumerateDirectories(Dir))
+            {
+                
+                foreach(var name in Ekit.GetCategoryNames())
+                { // this doesn't seem to be working
+
+                    var dirInfo = new DirectoryInfo(dir);
+                    var dirName = dirInfo.Name;
+                    if ( dirName.Equals(Path.Combine(Main, name)))
+                    {
+                        MessageBox.Show(dir + ":" + Path.Combine(Main, name));
+                        LocallyCreatedDirectories.Add(dir);
+                    }
+                }
+            }
+            var fileCounts = from d in LocallyCreatedDirectories
+                             select Directory.EnumerateFiles(d).Count();
+
+            foreach (int fileCount in fileCounts) totalCount += fileCount;
+            
+            return totalCount;
         }
-
-
-        public EventHandler<EventArgs> OrganizingStarted;
-        protected virtual void OnOrganizingStarted()
-        {
-            OrganizingStarted?.Invoke(this, EventArgs.Empty);
-        }
-
-
-
-        public EventHandler<EventArgs> OrganizeFinished;
-        protected virtual void OnOrganizingFinished()
-        {
-            OrganizeFinished?.Invoke(this, EventArgs.Empty);
-        }
-
-
-        public EventHandler<EventArgs> UnpackStarted;
-        public EventHandler<EventArgs> UnpackFinished;
-        protected virtual void OnUnpackStarted()
-        {
-            UnpackStarted?.Invoke(this, EventArgs.Empty);
-        }
-        protected virtual void OnUnpackFinished()
-        {
-            UnpackFinished?.Invoke(this, EventArgs.Empty);
-        }
-
-
-
 
         public void Unpack()
-        {
-            
+        { // update to only unpack folders created by this app
             if (ProgressStatus != Status.Processing)
             {
-                OnUnpackStarted();
 
-                
-                int totalCount = 0;
+                List<string> LocallyCreatedDirectories = new List<string>();
 
-                var fileCounts = from d in Directory.EnumerateDirectories(Main)
-                                 select Directory.EnumerateFiles(d).Count();
-                foreach (int fileCount in fileCounts)
+                foreach (var dir in Directory.EnumerateDirectories(Main))
                 {
-                    totalCount += fileCount;
+
+                    foreach (var name in Ekit.GetCategoryNames())
+                    { // this doesn't seem to be working
+
+                        var dirInfo = new DirectoryInfo(dir);
+                        var dirName = dirInfo.Name;
+
+                        if (dirName.Equals(name)) // why don't these match????
+                        {
+                           // MessageBox.Show(dir + ":" +name );
+                            LocallyCreatedDirectories.Add(dir);
+                        }
+                    }
                 }
-                InitialFileCount = totalCount;
 
 
 
-                var directories = Directory.EnumerateDirectories(Main);
-                foreach( var directory in directories)
+
+                OnUnpackStarted();
+                InitialFileCount = GetFileCountFromSubDirectories(Main);
+
+                foreach( var directory in LocallyCreatedDirectories)
                 {
-                    var _files = Directory.EnumerateFiles(directory);
-                    foreach(var _file in _files)
+                    foreach(var _file in Directory.EnumerateFiles(directory))
                     {
-                        string name = Path.GetFileName(_file);
-                        File.Move(_file, Path.Combine(Main, name));
+                        File.Move(_file, Path.Combine(Main, Path.GetFileName(_file)));
                         MonitorFileCount();
                     }
                     Directory.Delete(directory);
                 }
-              
-
             }
             InitialFileCount = GetFileCount();
             OnUnpackFinished();
-
         }
-
 
         public void OrganizeDownloads()
         {
-
             OnOrganizingStarted();
             InitialFileCount = GetFileCount();
             ProgressStatus = Status.Processing;
@@ -160,6 +168,15 @@ namespace OneClickDownloadsOrganizer
             }
             MonitorFileCount();
         }
+        public void CreateDummieFiles(int count)
+        {
+            for (int i = 0; i <= count; i++)
+            {
+                string name = i.ToString() + ".txt";
+                File.Create(Path.Combine(Main, name));
+            }
+            InitialFileCount = Files.Count() - 1;
+        } // testing Purposes
 
         public enum Status
         {
@@ -175,12 +192,8 @@ namespace OneClickDownloadsOrganizer
         {
             NewFileCount = newFileCount;
             OldFileCount = oldFileCount > 0 ? oldFileCount : oldFileCount + 1;
-
             CompletionPercentage = 100 - (100 * (NewFileCount/OldFileCount));
-           
-           // MessageBox.Show(CompletionPercentage.ToString() + " " + NewFileCount.ToString() + " " + OldFileCount.ToString());
         }
-        
         public double CompletionPercentage { get; set; }    
         public double NewFileCount { get; set; }
         public double OldFileCount { get; set; }
