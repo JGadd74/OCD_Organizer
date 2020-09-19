@@ -37,42 +37,39 @@ namespace OneClickDownloadsOrganizer
 
             
         }
+        readonly FileOrganizer Organizer = new FileOrganizer();
 
         private void Organizer_Unpack_Finished(object sender, EventArgs e)
         {
             this.Dispatcher.Invoke(() => Button_Organize.IsEnabled = true);
         }
-
         private void Organizer_Unpack_Started(object sender, EventArgs e)
         {
             this.Dispatcher.Invoke(() => Button_Organize.IsEnabled = false);
         }
-
         private void Organizer_Organizing_Finished(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() => RestoreButton.IsEnabled = true);
+            this.Dispatcher.Invoke(() =>
+            {
+                if(!AutoIsEnabled) UnpackButton.IsEnabled = true;
+            });
         }
-
         private void Organizer_Organizing_Started(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() => RestoreButton.IsEnabled = false);
+            this.Dispatcher.Invoke(() => UnpackButton.IsEnabled = false);
         }
-
-        public static bool AutoIsEnabled = false;
- 
-        readonly FileOrganizer Organizer = new FileOrganizer();
-
         private void Organizer_FileCountUpdated(object source, FileCountUpdatedEventArgs e)
         {
             double p;
             p = e.CompletionPercentage;
             UpdateProgressBar(p);
         }
+
         public void SayStatus()
         {
             this.Dispatcher.Invoke(() =>
             {
-                Head.Text = "Loose Files: " + Organizer.GetFileCount().ToString();
+                StatusBlock.Text = "Loose Files: " + Organizer.GetFileCount().ToString();
                 //Thread.Sleep(0);
             });
         }
@@ -81,31 +78,15 @@ namespace OneClickDownloadsOrganizer
             this.Dispatcher.Invoke(() =>
             {
                 SayStatus();
-                //Head.Text = value.ToString(); //testing
+                //StatusBlock.Text = value.ToString(); //testing
                 MyProgressBar.Value = value;
             });
         }
-
-        public int AutoRate = 6000;
+        
         private void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem((O) =>
-            {
-                this.Dispatcher.Invoke(() => AutoIsEnabled = AutoCheck.IsChecked.Value);
-
-                if (!AutoIsEnabled) Organizer.OrganizeDownloads();
-                {
-                    while(FileOrganizer.ProgressStatus != FileOrganizer.Status.Finished)
-                    {
-                        Organizer.OrganizeDownloads();
-                        Thread.Sleep(AutoRate);//1 min
-                        if (!AutoIsEnabled) break;
-                    }
-                }
-            });       
+            ThreadPool.QueueUserWorkItem((O) => Organizer.OrganizeDownloads());       
         }
-
-       
         
         private void Button_Click_Exit(object sender, RoutedEventArgs e)
         {
@@ -117,25 +98,46 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() =>
             {
-                Head.Text = "Done!";
+                StatusBlock.Text = "Done!";
             });
         }
         private void CreateDummyFiles_Click(object sender, RoutedEventArgs e)
         { // testing purposes
             Organizer.CreateDummieFiles(1000);
         }
-
         private void UnpackButton_Click(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem((o) => 
-            {
-                Organizer.Unpack();
-            });
-            
+            ThreadPool.QueueUserWorkItem((o) => Organizer.Unpack());
         }
 
-        
 
-        
+        public int AutoRate = 10;
+        public static bool AutoIsEnabled = true;
+
+        private void AutoCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() => 
+            {
+                AutoIsEnabled = true;
+                UnpackButton.IsEnabled = false;
+            });
+            ThreadPool.QueueUserWorkItem((o) =>
+            {   // update to run on incrementing timespans///////////////////////////////////////////
+                while (AutoIsEnabled)
+                {
+                    Thread.Sleep(0);
+                    Organizer.OrganizeDownloads();
+                }
+            });
+        }
+
+        private void AutoCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                AutoIsEnabled = false;
+                UnpackButton.IsEnabled = true;
+            });
+        }
     }
 }

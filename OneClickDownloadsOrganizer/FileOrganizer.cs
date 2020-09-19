@@ -69,16 +69,13 @@ namespace OneClickDownloadsOrganizer
         public int GetFileCountFromSubDirectories(string Dir)
         {
             int totalCount = 0;
-
-            //var fileCounts = from d in Directory.EnumerateDirectories(Dir)
-            //                 select Directory.EnumerateFiles(d).Count();
             List<string> LocallyCreatedDirectories = new List<string>();
 
             foreach(var dir in Directory.EnumerateDirectories(Dir))
             {
                 
                 foreach(var name in Ekit.GetCategoryNames())
-                { // this doesn't seem to be working
+                {
 
                     var dirInfo = new DirectoryInfo(dir);
                     var dirName = dirInfo.Name;
@@ -96,38 +93,32 @@ namespace OneClickDownloadsOrganizer
             
             return totalCount;
         }
+        public List<string> GetLocallyCreatedDirs()
+        {
+            List<string> LocallyCreatedDirectories = new List<string>();
 
+            foreach (var dir in Directory.EnumerateDirectories(Main))
+            {
+                foreach (var name in Ekit.GetCategoryNames())
+                { 
+                    var dirInfo = new DirectoryInfo(dir);
+                    var dirName = dirInfo.Name;
+                    if (dirName.Equals(name)) 
+                        LocallyCreatedDirectories.Add(dir);
+                }
+            }
+            return LocallyCreatedDirectories;
+        }
         public void Unpack()
-        { // update to only unpack folders created by this app
+        { 
             if (ProgressStatus != Status.Processing)
             {
-
-                List<string> LocallyCreatedDirectories = new List<string>();
-
-                foreach (var dir in Directory.EnumerateDirectories(Main))
-                {
-
-                    foreach (var name in Ekit.GetCategoryNames())
-                    { // this doesn't seem to be working
-
-                        var dirInfo = new DirectoryInfo(dir);
-                        var dirName = dirInfo.Name;
-
-                        if (dirName.Equals(name)) // why don't these match????
-                        {
-                           // MessageBox.Show(dir + ":" +name );
-                            LocallyCreatedDirectories.Add(dir);
-                        }
-                    }
-                }
-
-
-
-
+                ProgressStatus = Status.Processing;
+ 
                 OnUnpackStarted();
                 InitialFileCount = GetFileCountFromSubDirectories(Main);
 
-                foreach( var directory in LocallyCreatedDirectories)
+                foreach( var directory in GetLocallyCreatedDirs())
                 {
                     foreach(var _file in Directory.EnumerateFiles(directory))
                     {

@@ -22,12 +22,14 @@
 
         <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="20">
 
-            <TextBlock Name="Head" Text="Progress:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Name="StatusBlock" Text="Progress:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold"/>
             <ProgressBar Name="MyProgressBar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="10" Width="150"  />
             <CheckBox Name="AutoCheck" VerticalAlignment="Bottom" HorizontalAlignment="Left" 
                   Margin="0,10,0,0" 
                   Content="Auto" 
                   ToolTip="Check if you want to continue to organize automatically every 60 seconds."
+                  Checked="AutoCheck_Checked"
+                  Unchecked="AutoCheck_Unchecked"
                   IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
 
         </StackPanel>
@@ -35,7 +37,7 @@
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="left" Margin="0,0,0,0">
             
             <Button Name="Button_Organize" HorizontalAlignment="Left" Height="50" Width="90" Content="Organize" FontSize="14" Click="Button_Click_Organize"/>
-            <Button Name="RestoreButton" Content="Unpack"  Height="50" Width="90" HorizontalAlignment="Left" FontSize="14"  Click="UnpackButton_Click"/>
+            <Button Name="UnpackButton" Content="Unpack"  Height="50" Width="90" HorizontalAlignment="Left" FontSize="14"  Click="UnpackButton_Click"/>
             <Button  HorizontalAlignment="Left" Height="50" Width="90" Content="Exit" FontSize="14" Click="Button_Click_Exit"/>
             <!--<Button Name="CreateDummyFiles" Content="Dummies" Height="50" Width="auto" Click="CreateDummyFiles_Click" />-->
         </StackPanel>
