@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
 
-        <TextBlock Text="One Click Download Organizer" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="14" FontWeight="Bold" Margin="0,0,10,0"/>
+        <TextBlock Name="Header" Text="One Click Download Organizer" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="14" FontWeight="Bold" Margin="0,0,10,0" />
 
         <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="20">
 
@@ -31,7 +31,7 @@
                   Checked="AutoCheck_Checked"
                   Unchecked="AutoCheck_Unchecked"
                   IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
-
+            <TextBlock Name="autoData"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="left" Margin="0,0,0,0">

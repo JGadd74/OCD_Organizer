@@ -61,9 +61,9 @@ namespace OneClickDownloadsOrganizer
             }
         }
 
+        public bool ThereAreFiles() => GetFileCount() > 0 ? true : false;
 
 
-       
 
 
         public int GetFileCountFromSubDirectories(string Dir)
@@ -176,6 +176,9 @@ namespace OneClickDownloadsOrganizer
             Finished
         }
     }
+
+   
+
 
     public class FileCountUpdatedEventArgs
     {

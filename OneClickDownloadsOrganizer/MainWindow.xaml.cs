@@ -18,10 +18,10 @@ using System.Runtime.CompilerServices;
 namespace OneClickDownloadsOrganizer
 {
     /// <summary>
-    /// Plans: Using data binding for AutoCheck
+    /// Plans: setup incremental time checks for auto mode
     ///        refactor
-    ///        Undo? v .6
-    ///        Select custom folder for organize v1.0
+    ///        Undo? v .6 - Check
+    ///        Select from set of folder options to organize v1.0
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -70,6 +70,7 @@ namespace OneClickDownloadsOrganizer
             this.Dispatcher.Invoke(() =>
             {
                 StatusBlock.Text = "Loose Files: " + Organizer.GetFileCount().ToString();
+             
                 //Thread.Sleep(0);
             });
         }
@@ -110,23 +111,77 @@ namespace OneClickDownloadsOrganizer
             ThreadPool.QueueUserWorkItem((o) => Organizer.Unpack());
         }
 
-
-        public int AutoRate = 10;
         public static bool AutoIsEnabled = true;
 
+      
         private void AutoCheck_Checked(object sender, RoutedEventArgs e)
         {
             this.Dispatcher.Invoke(() => 
             {
+                autoData.Visibility = Visibility.Visible;
                 AutoIsEnabled = true;
                 UnpackButton.IsEnabled = false;
             });
-            ThreadPool.QueueUserWorkItem((o) =>
-            {   // update to run on incrementing timespans///////////////////////////////////////////
+
+            int AutoRate = 1;
+            int tries = 0;
+            string unit = "Msec";
+            int unitDivisor = 1;
+
+        ThreadPool.QueueUserWorkItem((o) =>
+            {   
+               
                 while (AutoIsEnabled)
                 {
-                    Thread.Sleep(0);
-                    Organizer.OrganizeDownloads();
+                    if (Organizer.ThereAreFiles())
+                    {
+                        
+                        AutoRate = 1;
+                        tries = 1;
+                        Organizer.OrganizeDownloads();
+                    }
+                    else if(!Organizer.ThereAreFiles())
+                    {
+                                   
+                        const int oneSec = 1000;
+                        const int tenSec = oneSec * 10;
+                        const int oneMin = tenSec * 6;
+                        const int thirtyMin = oneMin * 30;
+                        const int OneHour = thirtyMin * 2;
+                        const int ThreeHour = OneHour * 3;
+
+                        if ( AutoRate < ThreeHour)
+                        {
+                            switch (tries)
+                            {
+                                case tenSec: //after 10 sec
+                                    AutoRate = oneSec; //1sec
+                                    unit = "Sec";
+                                    unitDivisor = oneSec;
+                                    break;
+                                case 10060: //after 1 min
+                                    AutoRate = oneMin; // 1 min
+                                    unit = "Min";
+                                    unitDivisor = oneMin;
+                                    break;
+                                case 10090:  // after 30 min
+                                    AutoRate = thirtyMin;
+                                    break;
+                                case 10096: //after 3 hours
+                                    unit = "Hr";
+                                    unitDivisor = OneHour;
+                                    AutoRate = ThreeHour;
+                                    break;
+                            }
+                           
+                            tries++;
+                        }
+                    }
+                    this.Dispatcher.Invoke(() => autoData.Text = "Check interval(" + unit + "): " + ((double)AutoRate/(double)unitDivisor).ToString()
+                                                                + '\n' + "Checks: " + tries.ToString());
+                    Thread.Sleep(AutoRate);
+
+
                 }
             });
         }
@@ -135,6 +190,7 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() =>
             {
+                autoData.Visibility = Visibility.Hidden;
                 AutoIsEnabled = false;
                 UnpackButton.IsEnabled = true;
             });
