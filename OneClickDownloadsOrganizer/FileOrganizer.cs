@@ -15,7 +15,7 @@ namespace OneClickDownloadsOrganizer
 
         private static  readonly string Main = @"C:\Users\" + Environment.UserName + @"\Downloads";
 
-        ExtensionsKit Ekit = new ExtensionsKit();
+        readonly ExtensionsKit Ekit = new ExtensionsKit();
         private static readonly IEnumerable<string> Files = Directory.EnumerateFiles(Main);
         private const int CategoryName = 0;
         public static int InitialFileCount;
@@ -61,7 +61,7 @@ namespace OneClickDownloadsOrganizer
             }
         }
 
-        public bool ThereAreFiles() => GetFileCount() > 0 ? true : false;
+        public bool ThereAreFiles() => GetFileCount() > 0;
 
 
 
