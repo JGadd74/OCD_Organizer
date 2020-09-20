@@ -38,18 +38,6 @@ namespace OneClickDownloadsOrganizer
             UnpackStarted?.Invoke(this, EventArgs.Empty);
         protected virtual void OnUnpackFinished() =>
             UnpackFinished?.Invoke(this, EventArgs.Empty);
-
-
-
-
-       
-       
-        
-
-      
-     
-
-
         public void MonitorFileCount()
         {
        
@@ -60,12 +48,7 @@ namespace OneClickDownloadsOrganizer
                 OnOrganizingFinished();
             }
         }
-
         public bool ThereAreFiles() => GetFileCount() > 0;
-
-
-
-
         public int GetFileCountFromSubDirectories(string Dir)
         {
             int totalCount = 0;
@@ -131,7 +114,6 @@ namespace OneClickDownloadsOrganizer
             InitialFileCount = GetFileCount();
             OnUnpackFinished();
         }
-
         public void OrganizeDownloads()
         {
             OnOrganizingStarted();
@@ -168,7 +150,6 @@ namespace OneClickDownloadsOrganizer
             }
             InitialFileCount = Files.Count() - 1;
         } // testing Purposes
-
         public enum Status
         {
             Ready,
@@ -176,10 +157,6 @@ namespace OneClickDownloadsOrganizer
             Finished
         }
     }
-
-   
-
-
     public class FileCountUpdatedEventArgs
     {
         public FileCountUpdatedEventArgs(int newFileCount, int oldFileCount)

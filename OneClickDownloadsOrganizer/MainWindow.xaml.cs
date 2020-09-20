@@ -20,7 +20,7 @@ namespace OneClickDownloadsOrganizer
     /// <summary>
     /// Plans: setup incremental time checks for auto mode
     ///        refactor
-    ///        Undo? v .6 - Check
+    ///        Undo? v .6 - revised: Unpack - Check
     ///        Select from set of folder options to organize v1.0
     /// </summary>
     public partial class MainWindow : Window
@@ -108,16 +108,10 @@ namespace OneClickDownloadsOrganizer
 
             InitializeAutoMode();
         }
-
         private void SayStatus()
         {
             this.Dispatcher.Invoke(() => StatusBlock.Text = "Loose Files: " + Organizer.GetFileCount().ToString());
         }
-        private void SayDone()
-        {
-            this.Dispatcher.Invoke(() => StatusBlock.Text = "Done!");
-        }
-
         private void UpdateProgressBar(double value)
         {
             this.Dispatcher.Invoke(() =>
@@ -185,6 +179,11 @@ namespace OneClickDownloadsOrganizer
                     Thread.Sleep(AutoRate);
                 }
             });
+        }
+
+        private void Button_Organize_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
         }
     }
 }
