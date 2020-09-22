@@ -6,14 +6,17 @@ using System.Linq;
 using System.Windows;
 using System.Runtime.InteropServices;
 using System.Diagnostics.Eventing.Reader;
+using System.Security.Policy;
+using System.Xaml.Schema;
 
 namespace OneClickDownloadsOrganizer
 {
     class FileOrganizer
     {
+        // start refactoring to allow for different Main locations
         public FileOrganizer() => InitialFileCount = Directory.EnumerateFiles(Main).Count() - 1;
 
-        private static  readonly string Main = @"C:\Users\" + Environment.UserName + @"\Downloads";
+        private static string Main = @"C:\Users\" + Environment.UserName + @"\Downloads";
 
         readonly ExtensionsKit Ekit = new ExtensionsKit();
         private static readonly IEnumerable<string> Files = Directory.EnumerateFiles(Main);
@@ -39,53 +42,47 @@ namespace OneClickDownloadsOrganizer
         protected virtual void OnUnpackFinished() =>
             UnpackFinished?.Invoke(this, EventArgs.Empty);
 
+        private void SetLocation(string local)
+        {
+            Main = local;
+        }
 
-
-
-       
-       
-        
-
-      
-     
+        Dictionary<string, string> Locations = new Dictionary<string, string>()
+        {
+            { "Downloads", @"C:\Users\" + Environment.UserName + @"\Downloads" },
+            { "Documents", @"C:\Users\" + Environment.UserName + @"\Documents" },
+            {"Desktop", @"C:\Users\" + Environment.UserName + @"\OneDrive\Desktop" }
+        };
+        private void test()
+        {
+            SetLocation(Locations["Downloads"]);
+        }
 
 
         public void MonitorFileCount()
         {
-       
             OnFileCountUpdated();
-            if (GetFileCount() == 0) 
+            if (GetFileCount() == 0 && ProgressStatus == Status.Organizing) 
             {
                 ProgressStatus = Status.Finished;
                 OnOrganizingFinished();
+            }
+            else if (ThereAreFiles() && GetFileCountFromSubDirectories(Main) == 0 && ProgressStatus == Status.Organizing)
+            {
+                ProgressStatus = Status.Finished;
+                OnUnpackFinished();
             }
         }
 
         public bool ThereAreFiles() => GetFileCount() > 0;
 
 
-
-
         public int GetFileCountFromSubDirectories(string Dir)
         {
             int totalCount = 0;
-            List<string> LocallyCreatedDirectories = new List<string>();
+            List<string> LocallyCreatedDirectories = GetLocallyCreatedDirs();
 
-            foreach(var dir in Directory.EnumerateDirectories(Dir))
-            {
-                
-                foreach(var name in Ekit.GetCategoryNames())
-                {
-
-                    var dirInfo = new DirectoryInfo(dir);
-                    var dirName = dirInfo.Name;
-                    if ( dirName.Equals(Path.Combine(Main, name)))
-                    {
-                        MessageBox.Show(dir + ":" + Path.Combine(Main, name));
-                        LocallyCreatedDirectories.Add(dir);
-                    }
-                }
-            }
+           
             var fileCounts = from d in LocallyCreatedDirectories
                              select Directory.EnumerateFiles(d).Count();
 
@@ -111,9 +108,9 @@ namespace OneClickDownloadsOrganizer
         }
         public void Unpack()
         { 
-            if (ProgressStatus != Status.Processing)
+            if (ProgressStatus != Status.Unpacking)
             {
-                ProgressStatus = Status.Processing;
+                ProgressStatus = Status.Unpacking;
  
                 OnUnpackStarted();
                 InitialFileCount = GetFileCountFromSubDirectories(Main);
@@ -126,17 +123,21 @@ namespace OneClickDownloadsOrganizer
                         MonitorFileCount();
                     }
                     Directory.Delete(directory);
+                    MonitorFileCount();
+
                 }
             }
+            MonitorFileCount();
             InitialFileCount = GetFileCount();
             OnUnpackFinished();
         }
 
         public void OrganizeDownloads()
         {
+            test();
             OnOrganizingStarted();
             InitialFileCount = GetFileCount();
-            ProgressStatus = Status.Processing;
+            ProgressStatus = Status.Organizing;
           
             foreach (string file in Files)
             {
@@ -172,7 +173,8 @@ namespace OneClickDownloadsOrganizer
         public enum Status
         {
             Ready,
-            Processing,
+            Organizing,
+            Unpacking,
             Finished
         }
     }

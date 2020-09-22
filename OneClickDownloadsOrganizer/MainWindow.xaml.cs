@@ -34,34 +34,53 @@ namespace OneClickDownloadsOrganizer
             Organizer.UnpackStarted += Organizer_Unpack_Started;
             Organizer.UnpackFinished += Organizer_Unpack_Finished;
             MyProgressBar.Maximum = 100;
+            Header.Text = "One Click\nDownloads \nOrganizer";
         }
         readonly FileOrganizer Organizer = new FileOrganizer();
-        private static bool AutoIsEnabled = true;
+        private static bool AutoIsEnabled = false;
 
         private void Organizer_Unpack_Finished(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() => Button_Organize.IsEnabled = true);
+            EnableButtons();
         }
         private void Organizer_Unpack_Started(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() => Button_Organize.IsEnabled = false);
+            DisableButtons();
         }
-        private void Organizer_Organizing_Finished(object sender, EventArgs e)
+        private void EnableButtons()
         {
             this.Dispatcher.Invoke(() =>
             {
-                //if(!AutoIsEnabled)
-                    UnpackButton.IsEnabled = true;
+                Button_Organize.IsEnabled = true;
+                UnpackButton.IsEnabled = true;
+                AutoCheck.IsEnabled = true;
             });
+        }
+        private void DisableButtons()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                Button_Organize.IsEnabled = false;
+                UnpackButton.IsEnabled = false;
+                AutoCheck.IsEnabled = false;
+            });
+        }
+        private void Organizer_Organizing_Finished(object sender, EventArgs e)
+        {
+                this.Dispatcher.Invoke(() =>
+                {
+                    if (!AutoIsEnabled)
+                    {
+                        Button_Organize.IsEnabled = true;
+                        UnpackButton.IsEnabled = true;
+                    }
+                    AutoCheck.IsEnabled = true;
+                });
         }
         private void Organizer_Organizing_Started(object sender, EventArgs e)
         {
-            if(Organizer.GetFileCount() > 0)
-            this.Dispatcher.Invoke(() => 
-            {
-                UnpackButton.IsEnabled = false;
-                //AutoIsEnabled = false;
-            });
+            if (Organizer.GetFileCount() > 0)
+                DisableButtons();
         }
         private void Organizer_FileCountUpdated(object source, FileCountUpdatedEventArgs e)
         {
@@ -79,7 +98,7 @@ namespace OneClickDownloadsOrganizer
         }
         private void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem((O) => Organizer.OrganizeDownloads());
+            ThreadPool.QueueUserWorkItem((o) => Organizer.OrganizeDownloads());
         }
         private void Button_Click_Exit(object sender, RoutedEventArgs e)
         {
