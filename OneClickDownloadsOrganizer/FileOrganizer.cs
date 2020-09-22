@@ -39,7 +39,7 @@ namespace OneClickDownloadsOrganizer
             OrganizeFinished?.Invoke(this, EventArgs.Empty);
         protected virtual void OnUnpackStarted() =>
             UnpackStarted?.Invoke(this, EventArgs.Empty);
-        protected virtual void OnUnpackFinished() =>
+        protected virtual void OnUnpackingFinished() =>
             UnpackFinished?.Invoke(this, EventArgs.Empty);
 
         private void SetLocation(string local)
@@ -67,10 +67,10 @@ namespace OneClickDownloadsOrganizer
                 ProgressStatus = Status.Finished;
                 OnOrganizingFinished();
             }
-            else if (ThereAreFiles() && GetFileCountFromSubDirectories(Main) == 0 && ProgressStatus == Status.Organizing)
+            else if (GetFileCountFromSubDirectories(Main) == 0 && ProgressStatus == Status.Unpacking)
             {
                 ProgressStatus = Status.Finished;
-                OnUnpackFinished();
+                OnUnpackingFinished();
             }
         }
 
@@ -124,12 +124,10 @@ namespace OneClickDownloadsOrganizer
                     }
                     Directory.Delete(directory);
                     MonitorFileCount();
-
                 }
             }
             MonitorFileCount();
             InitialFileCount = GetFileCount();
-            OnUnpackFinished();
         }
 
         public void OrganizeDownloads()
