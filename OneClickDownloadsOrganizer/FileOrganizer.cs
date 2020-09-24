@@ -42,23 +42,6 @@ namespace OneClickDownloadsOrganizer
         protected virtual void OnUnpackingFinished() =>
             UnpackFinished?.Invoke(this, EventArgs.Empty);
 
-        private void SetLocation(string local)
-        {
-            Main = local;
-        }
-
-        Dictionary<string, string> Locations = new Dictionary<string, string>()
-        {
-            { "Downloads", @"C:\Users\" + Environment.UserName + @"\Downloads" },
-            { "Documents", @"C:\Users\" + Environment.UserName + @"\Documents" },
-            {"Desktop", @"C:\Users\" + Environment.UserName + @"\OneDrive\Desktop" }
-        };
-        private void test()
-        {
-            SetLocation(Locations["Downloads"]);
-        }
-
-
         public void MonitorFileCount()
         {
             OnFileCountUpdated();
@@ -132,7 +115,6 @@ namespace OneClickDownloadsOrganizer
 
         public void OrganizeDownloads()
         {
-            test();
             OnOrganizingStarted();
             InitialFileCount = GetFileCount();
             ProgressStatus = Status.Organizing;

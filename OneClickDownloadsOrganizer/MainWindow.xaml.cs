@@ -96,9 +96,10 @@ namespace OneClickDownloadsOrganizer
         {
             ThreadPool.QueueUserWorkItem((o) => Organizer.Unpack());
         }
-        private void Button_Click_Organize(object sender, RoutedEventArgs e)
+        private async void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem((o) => Organizer.OrganizeDownloads());
+            await Task.Run(() => Organizer.OrganizeDownloads());
+            //ThreadPool.QueueUserWorkItem((o) => Organizer.OrganizeDownloads());
         }
         private void Button_Click_Exit(object sender, RoutedEventArgs e)
         {
@@ -109,8 +110,8 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() =>
             {
-                autoData.Visibility = Visibility.Hidden;
                 AutoIsEnabled = false;
+                autoData.Text = " ";
                 UnpackButton.IsEnabled = true;
                 Button_Organize.IsEnabled = true;
             });
@@ -119,7 +120,6 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() =>
             {
-                autoData.Visibility = Visibility.Visible;
                 AutoIsEnabled = true;
                 UnpackButton.IsEnabled = false;
                 Button_Organize.IsEnabled = false;
@@ -204,6 +204,44 @@ namespace OneClickDownloadsOrganizer
                     Thread.Sleep(AutoRate);
                 }
             });
+        }
+
+        private void CustomLocationBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                CustomLocationCheckBox.IsChecked = true;
+                DefaultLocationCheckBox.IsChecked = false;
+                Search.IsEnabled = true;
+                CustomLocationBox.Text = "";
+            });
+        }
+
+        private void DefaultLocationCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DefaultLocationCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CustomLocationCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                CustomLocationCheckBox.IsChecked = true;
+                DefaultLocationCheckBox.IsChecked = false;
+                Search.IsEnabled = true;
+                CustomLocationBox.Text = "";
+                CustomLocationBox.Focus();
+            });
+        }
+
+        private void CustomLocationCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
