@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Runtime.CompilerServices;
 
 
+
 namespace OneClickDownloadsOrganizer
 {
     /// <summary>
@@ -211,37 +212,64 @@ namespace OneClickDownloadsOrganizer
             this.Dispatcher.Invoke(() =>
             {
                 CustomLocationCheckBox.IsChecked = true;
-                DefaultLocationCheckBox.IsChecked = false;
+                DefaultLocationRadioButton.IsChecked = false;
                 Search.IsEnabled = true;
-                CustomLocationBox.Text = "";
+                CustomLocationBox.Text = CustomLocationBox.Text.Equals("Enter Custom Path") ? "" : CustomLocationBox.Text;
             });
         }
 
-        private void DefaultLocationCheckBox_Checked(object sender, RoutedEventArgs e)
+     
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() => //works
+            {
+                string dir = CustomLocationBox.Text;
+                if (Organizer.ValidateDirectory(dir))
+                {
+                    autoData.Text = "Directory Found.";
+                    CustomLocationBox.BorderBrush = Brushes.Green;
+                    MyProgressBar.Value = 0;
+                    EnableButtons();
+                    
+                }
+                else
+                {
+                    autoData.Text = "Directory not found.";
+                    CustomLocationBox.BorderBrush = Brushes.Red;
+                    MyProgressBar.Value = 0;
+                    Button_Organize.IsEnabled = false;
+                    DisableButtons();
+                }
+            });
+        }
+
+        private void DefaultLocationRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() => 
+            {
+                Search.IsEnabled = false;
+            });
+        }
+
+        private void DefaultLocationRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void DefaultLocationCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        private void CustomLocationCheckBox_Unchecked_1(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void CustomLocationCheckBox_Checked(object sender, RoutedEventArgs e)
+        private void CustomLocationCheckBox_Checked_1(object sender, RoutedEventArgs e)
         {
             this.Dispatcher.Invoke(() =>
             {
-                CustomLocationCheckBox.IsChecked = true;
-                DefaultLocationCheckBox.IsChecked = false;
                 Search.IsEnabled = true;
-                CustomLocationBox.Text = "";
                 CustomLocationBox.Focus();
             });
-        }
-
-        private void CustomLocationCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-
+            
         }
     }
 }

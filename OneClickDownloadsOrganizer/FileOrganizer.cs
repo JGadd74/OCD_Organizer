@@ -113,6 +113,13 @@ namespace OneClickDownloadsOrganizer
             InitialFileCount = GetFileCount();
         }
 
+        public bool ValidateDirectory(string Path)
+        {
+            bool DoesItExist = Directory.Exists(Path);
+
+            return DoesItExist;
+        }
+
         public void OrganizeDownloads()
         {
             OnOrganizingStarted();
