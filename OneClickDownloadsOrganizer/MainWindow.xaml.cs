@@ -37,7 +37,7 @@ namespace OneClickDownloadsOrganizer
             MyProgressBar.Maximum = 100;
             Header.Text = "One Click\nDownloads \nOrganizer";
         }
-        readonly FileOrganizer Organizer = new FileOrganizer();
+        FileOrganizer Organizer = new FileOrganizer();
         private static bool AutoIsEnabled = false;
 
         private void Organizer_Unpack_Finished(object sender, EventArgs e)
@@ -99,7 +99,7 @@ namespace OneClickDownloadsOrganizer
         }
         private async void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
-            await Task.Run(() => Organizer.OrganizeDownloads());
+            await Task.Run(() => Organizer.OrganizeActivePath());
             //ThreadPool.QueueUserWorkItem((o) => Organizer.OrganizeDownloads());
         }
         private void Button_Click_Exit(object sender, RoutedEventArgs e)
@@ -115,15 +115,21 @@ namespace OneClickDownloadsOrganizer
                 autoData.Text = " ";
                 UnpackButton.IsEnabled = true;
                 Button_Organize.IsEnabled = true;
+                DefaultLocationRadioButton.IsEnabled = true;
+                CustomLocationRadioButton.IsEnabled = true;
             });
         }
         private void AutoCheck_Checked(object sender, RoutedEventArgs e)
         {
+            //   BUG if a valid custom location isn't set then autoCheck gets disabled upon checking
             this.Dispatcher.Invoke(() =>
             {
                 AutoIsEnabled = true;
                 UnpackButton.IsEnabled = false;
                 Button_Organize.IsEnabled = false;
+                DefaultLocationRadioButton.IsEnabled = false;
+                CustomLocationRadioButton.IsEnabled = false;
+
             });
 
             InitializeAutoMode();
@@ -168,7 +174,7 @@ namespace OneClickDownloadsOrganizer
                     {
                         AutoRate = 1;
                         tries = 1;
-                        Organizer.OrganizeDownloads();
+                        Organizer.OrganizeActivePath();
                     }
                     else if (!Organizer.ThereAreFiles())
                     {
@@ -211,15 +217,12 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() =>
             {
-                CustomLocationCheckBox.IsChecked = true;
+                CustomLocationRadioButton.IsChecked = true;
                 DefaultLocationRadioButton.IsChecked = false;
                 Search.IsEnabled = true;
                 CustomLocationBox.Text = CustomLocationBox.Text.Equals("Enter Custom Path") ? "" : CustomLocationBox.Text;
             });
         }
-
-     
-
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             this.Dispatcher.Invoke(() => //works
@@ -230,6 +233,7 @@ namespace OneClickDownloadsOrganizer
                     autoData.Text = "Directory Found.";
                     CustomLocationBox.BorderBrush = Brushes.Green;
                     MyProgressBar.Value = 0;
+                    Organizer.UseCustomLocation();
                     EnableButtons();
                     
                 }
@@ -238,7 +242,7 @@ namespace OneClickDownloadsOrganizer
                     autoData.Text = "Directory not found.";
                     CustomLocationBox.BorderBrush = Brushes.Red;
                     MyProgressBar.Value = 0;
-                    Button_Organize.IsEnabled = false;
+                    Organizer.UseDefaultLocation();
                     DisableButtons();
                 }
             });
@@ -248,26 +252,36 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() => 
             {
-                Search.IsEnabled = false;
+                if(Search != null) Search.IsEnabled = false;
+                Organizer.UseDefaultLocation();
             });
         }
 
         private void DefaultLocationRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
-
+            string dir = CustomLocationBox.Text;
+            if (!Organizer.ValidateDirectory(dir))
+            {
+                DisableButtons();
+            }
         }
 
-        private void CustomLocationCheckBox_Unchecked_1(object sender, RoutedEventArgs e)
+        private void CustomLocationRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
-
+            EnableButtons();
         }
 
-        private void CustomLocationCheckBox_Checked_1(object sender, RoutedEventArgs e)
+        private void CustomLocationRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             this.Dispatcher.Invoke(() =>
             {
                 Search.IsEnabled = true;
                 CustomLocationBox.Focus();
+                string dir = CustomLocationBox.Text;
+                if (Organizer.ValidateDirectory(dir))
+                {
+                    Organizer.UseCustomLocation();
+                }
             });
             
         }

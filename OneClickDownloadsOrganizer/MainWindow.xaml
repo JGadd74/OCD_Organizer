@@ -30,6 +30,7 @@
                 <RadioButton VerticalAlignment="Bottom" 
                   Margin="0,0,0,0" 
                   HorizontalAlignment="Left"
+                  IsChecked="True"
                   Name="DefaultLocationRadioButton"
                   Checked="DefaultLocationRadioButton_Checked"
                   Unchecked="DefaultLocationRadioButton_Unchecked" 
@@ -47,9 +48,9 @@
                 <RadioButton VerticalAlignment="Bottom" 
                     Margin="0,0,0,0" 
                     HorizontalAlignment="Left"
-                    Name="CustomLocationCheckBox"
-                    Checked="CustomLocationCheckBox_Checked_1"
-                    Unchecked="CustomLocationCheckBox_Unchecked_1"
+                    Name="CustomLocationRadioButton"
+                    Checked="CustomLocationRadioButton_Checked"
+                    Unchecked="CustomLocationRadioButton_Unchecked"
                     GroupName="LocationRadioButtons"/>
                 <TextBox Name="CustomLocationBox" Height="20" Width="105" FontSize="11" 
                     Text="Enter Custom Path" 
@@ -58,10 +59,11 @@
                     GotFocus="CustomLocationBox_GotFocus"
                     Margin="05,0,5,0"/>
                 <Button Name="Search" 
+                    IsEnabled="False"
                     Click="Search_Click"
                     Width="45" Height="20"
                     Margin="0,0,0,0"
-                    Content="Search"/>
+                    Content="Confirm"/>
 
 
             </StackPanel>

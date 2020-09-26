@@ -13,18 +13,21 @@ namespace OneClickDownloadsOrganizer
 {
     class FileOrganizer
     {
-        // start refactoring to allow for different Main locations
-        public FileOrganizer() => InitialFileCount = Directory.EnumerateFiles(Main).Count() - 1;
+      
+        public FileOrganizer() => InitialFileCount = Directory.EnumerateFiles(ActivePath).Count() - 1;
 
-        private static string Main = @"C:\Users\" + Environment.UserName + @"\Downloads";
+        private static string SecondaryPath = DefaultPath;
+        private static readonly string DefaultPath = @"C:\Users\" + Environment.UserName + @"\Downloads";
+        private static string ActivePath = DefaultPath;
 
         readonly ExtensionsKit Ekit = new ExtensionsKit();
-        private static readonly IEnumerable<string> Files = Directory.EnumerateFiles(Main);
+        private static IEnumerable<string> Files = Directory.EnumerateFiles(ActivePath);
         private const int CategoryName = 0;
         public static int InitialFileCount;
         
         public static Status ProgressStatus = Status.Ready;
-        public int GetFileCount() => Directory.EnumerateFiles(Main).Count() - 1;
+        public int GetFileCount() => Directory.EnumerateFiles(ActivePath).Count();
+        //BUG any dir other than Downloads doesn't have secret hidden file.  Fix
 
         public EventHandler<FileCountUpdatedEventArgs> FileCountUpdated;
         public EventHandler<EventArgs> OrganizingStarted;
@@ -50,7 +53,7 @@ namespace OneClickDownloadsOrganizer
                 ProgressStatus = Status.Finished;
                 OnOrganizingFinished();
             }
-            else if (GetFileCountFromSubDirectories(Main) == 0 && ProgressStatus == Status.Unpacking)
+            else if (GetFileCountFromSubDirectories(ActivePath) == 0 && ProgressStatus == Status.Unpacking)
             {
                 ProgressStatus = Status.Finished;
                 OnUnpackingFinished();
@@ -77,7 +80,7 @@ namespace OneClickDownloadsOrganizer
         {
             List<string> LocallyCreatedDirectories = new List<string>();
 
-            foreach (var dir in Directory.EnumerateDirectories(Main))
+            foreach (var dir in Directory.EnumerateDirectories(ActivePath))
             {
                 foreach (var name in Ekit.GetCategoryNames())
                 { 
@@ -96,13 +99,13 @@ namespace OneClickDownloadsOrganizer
                 ProgressStatus = Status.Unpacking;
  
                 OnUnpackStarted();
-                InitialFileCount = GetFileCountFromSubDirectories(Main);
+                InitialFileCount = GetFileCountFromSubDirectories(ActivePath);
 
                 foreach( var directory in GetLocallyCreatedDirs())
                 {
                     foreach(var _file in Directory.EnumerateFiles(directory))
                     {
-                        File.Move(_file, Path.Combine(Main, Path.GetFileName(_file)));
+                        File.Move(_file, Path.Combine(ActivePath, Path.GetFileName(_file)));
                         MonitorFileCount();
                     }
                     Directory.Delete(directory);
@@ -113,14 +116,30 @@ namespace OneClickDownloadsOrganizer
             InitialFileCount = GetFileCount();
         }
 
-        public bool ValidateDirectory(string Path)
+        public bool ValidateDirectory(string path)
         {
-            bool DoesItExist = Directory.Exists(Path);
-
-            return DoesItExist;
+            bool dirExists = Directory.Exists(path);
+            if(dirExists) SetNewLocation(path);
+            return dirExists;
         }
 
-        public void OrganizeDownloads()
+        private void SetNewLocation(string path)
+        {
+            SecondaryPath = path ?? "";
+        }
+
+        public void UseDefaultLocation()
+        {
+            ActivePath = DefaultPath;
+            Files = Directory.EnumerateFiles(ActivePath);
+        }
+        public void UseCustomLocation()
+        {
+            ActivePath = SecondaryPath;
+            Files = Directory.EnumerateFiles(ActivePath);
+        }
+
+        public void OrganizeActivePath()
         {
             OnOrganizingStarted();
             InitialFileCount = GetFileCount();
@@ -134,12 +153,12 @@ namespace OneClickDownloadsOrganizer
                     {
                         if (System.IO.Path.GetExtension(file) == extension)
                         {
-                            if (!Directory.Exists(System.IO.Path.Combine(Main, category[CategoryName])))
+                            if (!Directory.Exists(System.IO.Path.Combine(ActivePath, category[CategoryName])))
                             {
-                                Directory.CreateDirectory(System.IO.Path.Combine(Main, category[CategoryName]));
+                                Directory.CreateDirectory(System.IO.Path.Combine(ActivePath, category[CategoryName]));
                             }
                             string fileName = Path.GetFileName(file);
-                            File.Move(file, Path.Combine(Main, category[CategoryName], fileName));
+                            File.Move(file, Path.Combine(ActivePath, category[CategoryName], fileName));
                             MonitorFileCount();
                         }
                     }
@@ -152,7 +171,7 @@ namespace OneClickDownloadsOrganizer
             for (int i = 0; i <= count; i++)
             {
                 string name = i.ToString() + ".txt";
-                File.Create(Path.Combine(Main, name));
+                File.Create(Path.Combine(ActivePath, name));
             }
             InitialFileCount = Files.Count() - 1;
         } // testing Purposes
