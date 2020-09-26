@@ -121,7 +121,7 @@ namespace OneClickDownloadsOrganizer
         }
         private void AutoCheck_Checked(object sender, RoutedEventArgs e)
         {
-            //   BUG if a valid custom location isn't set then autoCheck gets disabled upon checking
+            //   BUG if ActivePath == DefaultPath then autoCheck gets disabled upon checking
             this.Dispatcher.Invoke(() =>
             {
                 AutoIsEnabled = true;

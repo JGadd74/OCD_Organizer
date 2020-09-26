@@ -26,7 +26,12 @@ namespace OneClickDownloadsOrganizer
         public static int InitialFileCount;
         
         public static Status ProgressStatus = Status.Ready;
-        public int GetFileCount() => Directory.EnumerateFiles(ActivePath).Count();
+        //public int GetFileCount() => Directory.EnumerateFiles(ActivePath).Count();
+        public int GetFileCount()
+        {
+            if (ActivePath == DefaultPath) return Directory.EnumerateFiles(ActivePath).Count() - 1;
+            else return Directory.EnumerateFiles(ActivePath).Count();
+        }
         //BUG any dir other than Downloads doesn't have secret hidden file.  Fix
 
         public EventHandler<FileCountUpdatedEventArgs> FileCountUpdated;
