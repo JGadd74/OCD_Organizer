@@ -267,6 +267,8 @@ namespace OneClickDownloadsOrganizer
         private void CustomLocationRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
             EnableButtons();
+            CustomLocationBox.BorderBrush = Brushes.DarkGray;
+            autoData.Text = "";
         }
 
         private void CustomLocationRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -274,6 +276,7 @@ namespace OneClickDownloadsOrganizer
             this.Dispatcher.Invoke(() =>
             {
                 Search.IsEnabled = true;
+                autoData.Text = "";
                 CustomLocationBox.Focus();
                 string dir = CustomLocationBox.Text;
                 if (Organizer.ValidateDirectory(dir))

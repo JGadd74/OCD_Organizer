@@ -5,8 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OneClickDownloadsOrganizer"
         mc:Ignorable="d"
-        Title="OCD Organizer" Height="260" Width="320">
+        ResizeMode="NoResize"
+        Title="OCD Organizer" Height="260" Width="320" Background="White" Foreground="Black">
     <Grid>
+        <Grid.Background>
+            <RadialGradientBrush RadiusX="1" RadiusY="1">
+                <RadialGradientBrush.RelativeTransform>
+                    <TransformGroup>
+                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                        <RotateTransform CenterY="0.5" CenterX="0.5"/>
+                        <TranslateTransform X="-0.5" Y="0.5"/>
+                    </TransformGroup>
+                </RadialGradientBrush.RelativeTransform>
+                <GradientStop Color="Black" Offset="1"/>
+                <GradientStop Color="#FF00E8FF"/>
+            </RadialGradientBrush>
+        </Grid.Background>
 
 
         <Grid.ColumnDefinitions>
@@ -21,49 +36,54 @@
         <TextBlock Name="Header" Width="145" TextWrapping="Wrap" 
                    Text="One-Click   Downloads  Organizer" 
                    VerticalAlignment="Top" HorizontalAlignment="Left" 
-                   FontSize="14" FontWeight="Bold" Margin="10,0,0,0" />
+                   FontSize="14" Margin="10,0,0,0" Foreground="White" Opacity="0.9" />
 
 
 
-        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="0,30,0,0" >
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+        <StackPanel Width="180" HorizontalAlignment="Left" Orientation="Vertical" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="0,30,0,60" Background="Black" Opacity="0.9" >
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,5" Background="Black" Opacity="0.9">
                 <RadioButton VerticalAlignment="Bottom" 
-                  Margin="0,0,0,0" 
+                  Margin="0,0,0,5" 
                   HorizontalAlignment="Left"
                   IsChecked="True"
                   Name="DefaultLocationRadioButton"
                   Checked="DefaultLocationRadioButton_Checked"
                   Unchecked="DefaultLocationRadioButton_Unchecked" 
-                  GroupName="LocationRadioButtons"/>
-
-                <TextBlock Text="Downloads Folder [Default]   "  
-                   Margin="5,0,0,0"
-                   Background="LightGray"
-                   Width="155"
+                  GroupName="LocationRadioButtons" Background="White" Foreground="Black" Opacity="0.9"/>
+                <Border BorderThickness="2" BorderBrush="DarkGray" Margin="5,0,0,0" Background="Black" Opacity="0.9">
+                    <TextBlock Text="Downloads Folder [Default]"  
+                   Margin="0,0,0,0"
+                   Background="Black"
+                   Width="153"
                    Height="20"
                    VerticalAlignment="Top"
-                   HorizontalAlignment="Left"/>
+                   HorizontalAlignment="Left" Foreground="White" Opacity="0.9"/>
+                </Border>
+
             </StackPanel>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Background="Black" Opacity="0.9">
                 <RadioButton VerticalAlignment="Bottom" 
-                    Margin="0,0,0,0" 
+                    Margin="0,0,0,5" 
                     HorizontalAlignment="Left"
                     Name="CustomLocationRadioButton"
                     Checked="CustomLocationRadioButton_Checked"
                     Unchecked="CustomLocationRadioButton_Unchecked"
-                    GroupName="LocationRadioButtons"/>
+                    GroupName="LocationRadioButtons" Background="White" Foreground="Black" Opacity="0.9"/>
                 <TextBox Name="CustomLocationBox" Height="20" Width="105" FontSize="11" 
                     Text="Enter Custom Path" 
-                    BorderBrush="Black" 
-                    Background="LightGray" 
+                    BorderBrush="DarkGray" 
+                    BorderThickness="2"
+                    Background="Black" 
                     GotFocus="CustomLocationBox_GotFocus"
-                    Margin="05,0,5,0"/>
+                    Margin="05,0,5,0" Foreground="White" SelectionBrush="White" Opacity="0.9"/>
                 <Button Name="Search" 
                     IsEnabled="False"
                     Click="Search_Click"
                     Width="45" Height="20"
                     Margin="0,0,0,0"
-                    Content="Confirm"/>
+                       FontSize="11"
+                    Content="Confirm" Background="Black" Foreground="White" Opacity="0.9"/>
 
 
             </StackPanel>
@@ -72,33 +92,93 @@
 
 
 
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" Grid.RowSpan="2">
-            <TextBlock Name="StatusBlock" Text="Progress:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold"/>
-            <ProgressBar Name="MyProgressBar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="10" Width="175"  />
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,15,0,0" Grid.RowSpan="2" Background="Black" Opacity="0.9">
+            <TextBlock Name="StatusBlock" Text="Progress:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold" Background="Black" Foreground="White" Opacity="0.9"/>
+            <ProgressBar Name="MyProgressBar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="10" Width="175" Opacity="0.9" Background="{x:Null}"  >
+                <ProgressBar.Foreground>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#FF00FFE8"/>
+                    </LinearGradientBrush>
+                </ProgressBar.Foreground>
+            </ProgressBar>
             <CheckBox Name="AutoCheck" VerticalAlignment="Bottom" HorizontalAlignment="Left" 
                   Margin="0,10,0,0" 
                   Content="Auto" 
                   ToolTip="Check if you want this application to continue to organize automatically."
                   Checked="AutoCheck_Checked"
                   Unchecked="AutoCheck_Unchecked"
-                  IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
-            <TextBlock Name="autoData" Height="30" Background="LightGray"  />
+                  IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" Background="Black" Foreground="White" OpacityMask="Red" Opacity="0.9" />
+            <Border BorderThickness="2" BorderBrush="DarkGray" Background="Black" Opacity="0.9">
+                <TextBlock Name="autoData" Height="30" Foreground="White" Opacity="0.9"   />
+            </Border>
+
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="left" Margin="0,0,0,0">
-            <Button Name="Button_Organize" HorizontalAlignment="Left" Height="50" Width="90" Content="Organize" FontSize="14" Click="Button_Click_Organize"
-                    ToolTip="Click to organize loose files into predefined file categories."
-                    BorderBrush="Black"
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="left" Margin="0,0,0,0" Opacity="0.9">
+            <Button Name="Button_Organize" HorizontalAlignment="Left" Height="41" Width="85" Content="Organize" Click="Button_Click_Organize"
+                    ToolTip="Click to organize loose files into predefined file categories." Foreground="White" BorderBrush="Black" Margin="0,4,0,0" BorderThickness="0,2" Opacity="0.9"
                     
-                    />
-            <Button Name="UnpackButton" Content="Unpack"  Height="50" Width="90" HorizontalAlignment="Left" FontSize="14"  Click="UnpackButton_Click"
-                    ToolTip="Click to unpack all organized files back to their original location."
-                    BorderBrush="Black"
+                    >
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.8">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="45" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#FF3A3A3A"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Button Name="UnpackButton" Content="Unpack"  Height="41" Width="85" HorizontalAlignment="Left"  Click="UnpackButton_Click"
+                    ToolTip="Click to unpack all organized files back to their original location." Foreground="White" BorderBrush="Black" Margin="0,4,0,0" BorderThickness="0,2" Opacity="0.9"
 
-                    />
-            <Button  HorizontalAlignment="Left" Height="50" Width="90" Content="Exit" FontSize="14" Click="Button_Click_Exit"
-                           BorderBrush="Black"
-/>
+                    >
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.8">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="45" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#FF3A3A3A"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Button  HorizontalAlignment="Left" Height="41" Width="85" Content="Exit" Click="Button_Click_Exit" Foreground="White" BorderBrush="Black" Margin="0,4,0,0" BorderThickness="0,2" Opacity="0.9"
+>
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.8">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="45" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#FF3A3A3A"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
             <!--<Button Name="CreateDummyFiles" Content="Dummies" Height="50" Width="auto" Click="CreateDummyFiles_Click" />-->
         </StackPanel>
 
