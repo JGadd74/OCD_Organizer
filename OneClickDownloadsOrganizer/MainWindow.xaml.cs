@@ -121,7 +121,6 @@ namespace OneClickDownloadsOrganizer
         }
         private void AutoCheck_Checked(object sender, RoutedEventArgs e)
         {
-            //   BUG if ActivePath == DefaultPath then autoCheck gets disabled upon checking
             this.Dispatcher.Invoke(() =>
             {
                 AutoIsEnabled = true;
@@ -225,8 +224,7 @@ namespace OneClickDownloadsOrganizer
         }
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.Invoke(() => //works
-            {
+            this.Dispatcher.Invoke(() =>             {
                 string dir = CustomLocationBox.Text;
                 if (Organizer.ValidateDirectory(dir))
                 {
