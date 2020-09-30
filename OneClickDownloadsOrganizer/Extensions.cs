@@ -90,7 +90,5 @@ namespace OneClickDownloadsOrganizer
         public static string[] video = new string[] { "Video Files", ".3g2", ".3gp" , ".avi" , ".flv" , ".h264" , ".m4v" , ".mkv" , ".mov" , ".mp4" , ".mpg" , ".mpeg" , ".rm" , ".swf" , ".vob" , ".wmv"};
 
         public static string[] wordProcessor = new string[] { "Word Processor Files", ".doc", ".docx" , ".odt" , ".pdf" , ".rtf" , ".tex" , ".txt" , ".wpd"};          
-    
-        
     }
 }

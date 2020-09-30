@@ -14,8 +14,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Runtime.CompilerServices;
 
-
-
 namespace OneClickDownloadsOrganizer
 {
     /// <summary>
@@ -37,7 +35,8 @@ namespace OneClickDownloadsOrganizer
             MyProgressBar.Maximum = 100;
             Header.Text = "One Click\nDownloads \nOrganizer";
         }
-        FileOrganizer Organizer = new FileOrganizer();
+
+        readonly FileOrganizer Organizer = new FileOrganizer();
         private static bool AutoIsEnabled = false;
 
         private void Organizer_Unpack_Finished(object sender, EventArgs e)
@@ -128,9 +127,7 @@ namespace OneClickDownloadsOrganizer
                 Button_Organize.IsEnabled = false;
                 DefaultLocationRadioButton.IsEnabled = false;
                 CustomLocationRadioButton.IsEnabled = false;
-
             });
-
             InitializeAutoMode();
         }
 
@@ -138,11 +135,6 @@ namespace OneClickDownloadsOrganizer
         {
             this.Dispatcher.Invoke(() => StatusBlock.Text = "Loose Files: " + Organizer.GetFileCount().ToString());
         }
-        private void SayDone()
-        {
-            this.Dispatcher.Invoke(() => StatusBlock.Text = "Done!");
-        }
-
         private void UpdateProgressBar(double value)
         {
             this.Dispatcher.Invoke(() =>
@@ -206,7 +198,6 @@ namespace OneClickDownloadsOrganizer
                     this.Dispatcher.Invoke(() => autoData.Text =
                     "Check interval(" + unit + "): " + ((double)AutoRate / (double)unitDivisor).ToString()
                      + '\n' + "Checks: " + tries.ToString());
-
                     Thread.Sleep(AutoRate);
                 }
             });
@@ -233,7 +224,6 @@ namespace OneClickDownloadsOrganizer
                     MyProgressBar.Value = 0;
                     Organizer.UseCustomLocation();
                     EnableButtons();
-                    
                 }
                 else
                 {
@@ -245,7 +235,6 @@ namespace OneClickDownloadsOrganizer
                 }
             });
         }
-
         private void DefaultLocationRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             this.Dispatcher.Invoke(() => 
@@ -254,7 +243,6 @@ namespace OneClickDownloadsOrganizer
                 Organizer.UseDefaultLocation();
             });
         }
-
         private void DefaultLocationRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
             string dir = CustomLocationBox.Text;
@@ -263,25 +251,24 @@ namespace OneClickDownloadsOrganizer
                 DisableButtons();
             }
         }
-
         private void CustomLocationRadioButton_Unchecked(object sender, RoutedEventArgs e)
         {
             EnableButtons();
         }
-
         private void CustomLocationRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             this.Dispatcher.Invoke(() =>
             {
+                string warning = "Do not use this organizer on critical system folders.\n" +
+                                 "It could cause system instability or failure. \n" +
+                                 "Use at own risk.";
+                
+                MessageBox.Show(warning , "Caution!");
                 Search.IsEnabled = true;
                 CustomLocationBox.Focus();
                 string dir = CustomLocationBox.Text;
-                if (Organizer.ValidateDirectory(dir))
-                {
-                    Organizer.UseCustomLocation();
-                }
+                if (Organizer.ValidateDirectory(dir)) Organizer.UseCustomLocation();
             });
-            
         }
     }
 }

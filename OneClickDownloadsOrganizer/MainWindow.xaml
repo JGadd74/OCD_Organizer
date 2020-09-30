@@ -7,12 +7,9 @@
         mc:Ignorable="d"
         Title="OCD Organizer" Height="260" Width="320">
     <Grid>
-
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="2*"/>
-
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
@@ -22,36 +19,37 @@
                    Text="One-Click   Downloads  Organizer" 
                    VerticalAlignment="Top" HorizontalAlignment="Left" 
                    FontSize="14" FontWeight="Bold" Margin="10,0,0,0" />
-
-
-
-        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="0,30,0,0" >
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="0,54,0,0" >
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,5">
                 <RadioButton VerticalAlignment="Bottom" 
-                  Margin="0,0,0,0" 
+                  Margin="0,0,-3,3" 
                   HorizontalAlignment="Left"
                   IsChecked="True"
                   Name="DefaultLocationRadioButton"
                   Checked="DefaultLocationRadioButton_Checked"
                   Unchecked="DefaultLocationRadioButton_Unchecked" 
                   GroupName="LocationRadioButtons"/>
-
-                <TextBlock Text="Downloads Folder [Default]   "  
-                   Margin="5,0,0,0"
-                   Background="LightGray"
-                   Width="155"
-                   Height="20"
-                   VerticalAlignment="Top"
-                   HorizontalAlignment="Left"/>
+                <Border  
+                    BorderBrush="Black" BorderThickness="1"
+                    Margin="5,0,0,0"
+                    Width="155"
+                    Height="20"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left">
+                    <TextBlock Text="Downloads Folder [Default]   "
+                        Background="LightGray"
+                   />
+                </Border>
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                 <RadioButton VerticalAlignment="Bottom" 
-                    Margin="0,0,0,0" 
+                    Margin="0,0,-3,3" 
                     HorizontalAlignment="Left"
                     Name="CustomLocationRadioButton"
                     Checked="CustomLocationRadioButton_Checked"
                     Unchecked="CustomLocationRadioButton_Unchecked"
-                    GroupName="LocationRadioButtons"/>
+                    GroupName="LocationRadioButtons"
+                    ToolTip="Select to use a custom file path."/>
                 <TextBox Name="CustomLocationBox" Height="20" Width="105" FontSize="11" 
                     Text="Enter Custom Path" 
                     BorderBrush="Black" 
@@ -64,15 +62,9 @@
                     Width="45" Height="20"
                     Margin="0,0,0,0"
                     Content="Confirm"/>
-
-
             </StackPanel>
         </StackPanel>
-
-
-
-
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" Grid.RowSpan="2">
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0" Grid.RowSpan="2">
             <TextBlock Name="StatusBlock" Text="Progress:" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontWeight="Bold"/>
             <ProgressBar Name="MyProgressBar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="10" Width="175"  />
             <CheckBox Name="AutoCheck" VerticalAlignment="Bottom" HorizontalAlignment="Left" 
@@ -82,22 +74,24 @@
                   Checked="AutoCheck_Checked"
                   Unchecked="AutoCheck_Unchecked"
                   IsChecked="{Binding ElementName=AutoIsEnabled, Path=IsCheckBoxChecked, Mode=OneWayToSource}" />
-            <TextBlock Name="autoData" Height="30" Background="LightGray"  />
+            <Border BorderBrush="Black" Height="35" BorderThickness="1">
+                <TextBlock x:Name="autoData" Background="LightGray"  Width="175"  />
+            </Border>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="left" Margin="0,0,0,0">
             <Button Name="Button_Organize" HorizontalAlignment="Left" Height="50" Width="90" Content="Organize" FontSize="14" Click="Button_Click_Organize"
                     ToolTip="Click to organize loose files into predefined file categories."
-                    BorderBrush="Black"
+                    BorderBrush="Black" Margin="0,0,0,3"
                     
                     />
             <Button Name="UnpackButton" Content="Unpack"  Height="50" Width="90" HorizontalAlignment="Left" FontSize="14"  Click="UnpackButton_Click"
                     ToolTip="Click to unpack all organized files back to their original location."
-                    BorderBrush="Black"
+                    BorderBrush="Black" Margin="0,0,0,3"
 
                     />
             <Button  HorizontalAlignment="Left" Height="50" Width="90" Content="Exit" FontSize="14" Click="Button_Click_Exit"
-                           BorderBrush="Black"
+                           BorderBrush="Black" Margin="0,0,0,3"
 />
             <!--<Button Name="CreateDummyFiles" Content="Dummies" Height="50" Width="auto" Click="CreateDummyFiles_Click" />-->
         </StackPanel>
