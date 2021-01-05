@@ -92,9 +92,10 @@ namespace OneClickDownloadsOrganizer
         { // testing purposes
             Organizer.CreateDummieFiles(1000);
         }
-        private void UnpackButton_Click(object sender, RoutedEventArgs e)
+        private async void UnpackButton_Click(object sender, RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem((o) => Organizer.Unpack());
+            await Task.Run(() => Organizer.Unpack());
+            //ThreadPool.QueueUserWorkItem((o) => Organizer.Unpack());
         }
         private async void Button_Click_Organize(object sender, RoutedEventArgs e)
         {
@@ -141,7 +142,7 @@ namespace OneClickDownloadsOrganizer
             {
                 SayStatus();
                 //StatusBlock.Text = value.ToString(); //testing
-                MyProgressBar.Value = value;
+                MyProgressBar.Value = value >= 0 && value <= 100 ? value : 0;
             });
         }
         private void InitializeAutoMode()
@@ -149,7 +150,7 @@ namespace OneClickDownloadsOrganizer
             int AutoRate = 1; // Milliseconds
             int tries = 0;
             int unitDivisor = 1;
-            string unit = "Msec";
+            string unit = "Ms";
             const int oneSec = 1000;
             const int tenSec = oneSec * 10;
             const int oneMin = tenSec * 6;
@@ -263,7 +264,7 @@ namespace OneClickDownloadsOrganizer
                                  "It could cause system instability or failure. \n" +
                                  "Use at own risk.";
                 
-                MessageBox.Show(warning , "Caution!");
+                MessageBox.Show(warning , "Caution!", MessageBoxButton.OK, MessageBoxImage.Warning);
                 Search.IsEnabled = true;
                 CustomLocationBox.Focus();
                 string dir = CustomLocationBox.Text;
