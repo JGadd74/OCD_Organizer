@@ -82,9 +82,19 @@
         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="left" Margin="0,0,0,0">
             <Button Name="Button_Organize" HorizontalAlignment="Left" Height="50" Width="90" Content="Organize" FontSize="14" Click="Button_Click_Organize"
                     ToolTip="Click to organize loose files into predefined file categories."
-                    BorderBrush="Black" Margin="0,0,0,3"
+                    BorderBrush="Black" Margin="0,0,0,3" Background="#FFDDDDDD" RenderTransformOrigin="0.5,0.5"
                     
-                    />
+
+                >
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1"/>
+                        <SkewTransform AngleX="0"/>
+                        <RotateTransform/>
+                        <TranslateTransform X="0"/>
+                    </TransformGroup>
+                </Button.RenderTransform>
+            </Button>
             <Button Name="UnpackButton" Content="Unpack"  Height="50" Width="90" HorizontalAlignment="Left" FontSize="14"  Click="UnpackButton_Click"
                     ToolTip="Click to unpack all organized files back to their original location."
                     BorderBrush="Black" Margin="0,0,0,3"

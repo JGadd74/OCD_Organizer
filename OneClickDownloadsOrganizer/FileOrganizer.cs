@@ -80,15 +80,14 @@ namespace OneClickDownloadsOrganizer
             {
                 foreach (var name in Ekit.GetCategoryNames())
                 {
-                    var dirInfo = new DirectoryInfo(dir);
-                    var dirName = dirInfo.Name;
+                    var dirName = new DirectoryInfo(dir).Name;
                     if (dirName.Equals(name))
                         LocallyCreatedDirectories.Add(dir);
                 }
             }
             return LocallyCreatedDirectories.ToArray();
         }
-        public void Unpack()
+        public void Unpack() // BUG crashes when unpacking a folder from another folder
         {
             if (ProgressStatus != Status.Unpacking)
             {
@@ -97,13 +96,22 @@ namespace OneClickDownloadsOrganizer
                 InitialFileCount = GetFileCountFromSubDirectories();
 
                 foreach (var directory in GetLocallyCreatedDirs())
-                {
+                { // bug fix, check ^^directory for sub directories, don't delete if present
                     foreach (var _file in Directory.EnumerateFiles(directory))
                     {
-                        File.Move(_file, Path.Combine(ActivePath, Path.GetFileName(_file)));
+                        if (!File.Exists(Path.Combine(ActivePath, Path.GetFileName(_file)))) 
+                        {
+                            File.Move(_file, Path.Combine(ActivePath, Path.GetFileName(_file)));
+                        }
+                        else if(File.Exists(Path.Combine(ActivePath, Path.GetFileName(_file))))
+                        {
+                            File.Delete(Path.Combine(ActivePath, Path.GetFileName(_file)));
+                            File.Move(_file, Path.Combine(ActivePath, Path.GetFileName(_file)));
+                        }
                         MonitorFileCount();
                     }
-                    Directory.Delete(directory);
+                    if(Directory.EnumerateDirectories(directory).Count() == 0) // sustainable bug fix?
+                        Directory.Delete(directory);
                     MonitorFileCount();
                 }
             }
@@ -143,11 +151,12 @@ namespace OneClickDownloadsOrganizer
                     {
                         if (System.IO.Path.GetExtension(file) == extension)
                         {
-                            if (!Directory.Exists(System.IO.Path.Combine(ActivePath, category[CategoryName])))
+                            if (!Directory.Exists(System.IO.Path.Combine(ActivePath, category[CategoryName]))) // sustainable bug fix??
                             {
                                 Directory.CreateDirectory(System.IO.Path.Combine(ActivePath, category[CategoryName]));
                             }
                             string fileName = Path.GetFileName(file);
+                           
                             File.Move(file, Path.Combine(ActivePath, category[CategoryName], fileName));
                             MonitorFileCount();
                         }
@@ -157,7 +166,7 @@ namespace OneClickDownloadsOrganizer
             MonitorFileCount();
         }
 
-        public void OrganizeActivePath() 
+        public void OrganizeActivePath() //BUG** crashes when moving file to location with a duplicate file
         {
             OnOrganizingStarted(); // start tracking progress
             InitialFileCount = GetFileCount();
@@ -172,9 +181,13 @@ namespace OneClickDownloadsOrganizer
                     if (category.Contains(Path.GetExtension(file)))
                     {
                         if (!Directory.Exists(Path.Combine(ActivePath, category[CategoryName])))
-                             Directory.CreateDirectory(Path.Combine(ActivePath, category[CategoryName]));
-                        
+                        {
+                            Directory.CreateDirectory(Path.Combine(ActivePath, category[CategoryName]));
+                        }
+
                         string fileName = Path.GetFileName(file);
+                        // CREATE MESSAGE BOX WITH WARNING, LET USER DECIDE WHAT TO DO??
+                        if (File.Exists(Path.Combine(ActivePath, category[CategoryName], fileName))) File.Delete(Path.Combine(ActivePath, category[CategoryName], fileName));
                         File.Move(file, Path.Combine(ActivePath, category[CategoryName], fileName));
                         fileMoved = true;
                         MonitorFileCount();
